@@ -1,173 +1,230 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulario de Pedido</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #fff;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario de Pedido</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 10px;
+    }
+
+    input[type="submit"] {
+      background-color: #f45b00;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #cc4800;
+    }
+
+    #mensaje {
+      display: none;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 20px;
+      color: green;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .check-icon {
+      font-size: 50px;
+      color: green;
+      margin-bottom: 10px;
+      animation: bounce 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
       form {
-        max-width: 600px;
-        margin: auto;
-        background: #f9f9f9;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        padding: 15px;
       }
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
+
       input, select, textarea {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 16px;
+        font-size: 15px;
       }
-      input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
-      }
+
       input[type="submit"] {
-        background-color: #f45b00;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        font-weight: bold;
-        text-transform: uppercase;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        padding: 12px 20px;
+        font-size: 15px;
       }
-      input[type="submit"]:hover {
-        background-color: #cc4800;
-      }
+
       #mensaje {
-        margin-top: 20px;
-        font-weight: bold;
-        text-align: center;
+        font-size: 18px;
       }
-    </style>
-  </head>
-  <body>
-    <form id="pedidoForm">
-      <h2>Haz tu pedido de gasoil</h2>
 
-      <label for="fecha">Fecha de preferencia:</label>
-      <input type="date" id="fecha" name="fecha" required />
+      .check-icon {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
 
-      <label for="zona">Zona de reparto:</label>
-      <select id="zona" name="zona" onchange="showPueblos();" required>
-        <option value="">Seleccione una zona</option>
-        <option value="sierraNorte">Sierra Norte</option>
-        <option value="sierraOeste">Sierra Oeste</option>
-      </select>
+  <form id="pedidoForm">
+    <h2>Haz tu pedido de gasoil</h2>
 
-      <label for="pueblo">Pueblo:</label>
-      <input list="listaPueblos" id="pueblo" name="pueblo" required />
-      <datalist id="listaPueblos"></datalist>
+    <label for="fecha">Fecha de preferencia:</label>
+    <input type="date" id="fecha" name="fecha" required />
 
-      <div id="avisoPueblo" style="color: red; font-weight: bold; display: none;"></div>
+    <label for="zona">Zona de reparto:</label>
+    <select id="zona" name="zona" onchange="showPueblos();" required>
+      <option value="">Seleccione una zona</option>
+      <option value="sierraNorte">Sierra Norte</option>
+      <option value="sierraOeste">Sierra Oeste</option>
+    </select>
 
-      <label for="direccion">Dirección:</label>
-      <input type="text" id="direccion" name="direccion" required />
+    <label for="pueblo">Pueblo:</label>
+    <input list="listaPueblos" id="pueblo" name="pueblo" required />
+    <datalist id="listaPueblos"></datalist>
 
-      <label for="cantidad">Cantidad (mínimo 300 litros):</label>
-      <input type="number" id="cantidad" name="cantidad" min="300" required />
+    <div id="avisoPueblo" style="color: red; font-weight: bold; display: none;"></div>
 
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" name="nombre" required />
+    <label for="direccion">Dirección:</label>
+    <input type="text" id="direccion" name="direccion" required />
 
-      <label for="telefono">Teléfono:</label>
-      <input type="tel" id="telefono" name="telefono" required />
+    <label for="cantidad">Cantidad (mínimo 300 litros):</label>
+    <input type="number" id="cantidad" name="cantidad" min="300" required />
 
-      <label for="email">Correo electrónico:</label>
-      <input type="email" id="email" name="email" required />
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required />
 
-      <label for="observaciones">Observaciones:</label>
-      <textarea id="observaciones" name="observaciones" rows="4"></textarea>
+    <label for="telefono">Teléfono:</label>
+    <input type="tel" id="telefono" name="telefono" required />
 
-      <label>
-        <input type="checkbox" id="consentimiento" name="consentimiento" required />
-        Acepto los términos y condiciones y la política de privacidad.
-      </label>
+    <label for="email">Correo electrónico:</label>
+    <input type="email" id="email" name="email" required />
 
-      <input type="submit" value="Enviar Pedido" />
-    </form>
+    <label for="observaciones">Observaciones:</label>
+    <textarea id="observaciones" name="observaciones" rows="4"></textarea>
 
-    <div id="mensaje"></div>
+    <label>
+      <input type="checkbox" id="consentimiento" name="consentimiento" required />
+      Acepto los términos y condiciones y la política de privacidad.
+    </label>
 
-    <script>
-      const pueblosPorZona = {
-        sierraNorte: ["Berrueco", "Buitrago de Lozoya", "Bustarviejo", "Cabanillas de la Sierra", "El Molar", "Guadalix de la Sierra", "La Cabrera", "Lozoyuela", "Pedrezuela", "San Agustín del Guadalix", "Venturada"],
-        sierraOeste: ["Aldea del Fresno", "Almorox", "Cebreros", "Chapinería", "Colmenar del Arroyo", "El Tiemblo", "Fresnedillas de la Oliva", "La Adrada", "Navalagamella", "Navas del Rey", "Pelayos de la Presa"]
+    <input type="submit" value="Enviar Pedido" />
+  </form>
+
+  <div id="mensaje">
+    <div class="check-icon">✅</div>
+    <div>Pedido enviado correctamente.<br><strong>Gracias por confiar en Grupo Geslama.</strong></div>
+  </div>
+
+  <script>
+    const pueblosPorZona = {
+      sierraNorte: ["Berrueco", "Buitrago de Lozoya", "Bustarviejo", "Cabanillas de la Sierra", "El Molar", "Guadalix de la Sierra", "La Cabrera", "Lozoyuela", "Pedrezuela", "San Agustín del Guadalix", "Venturada"],
+      sierraOeste: ["Aldea del Fresno", "Almorox", "Cebreros", "Chapinería", "Colmenar del Arroyo", "El Tiemblo", "Fresnedillas de la Oliva", "La Adrada", "Navalagamella", "Navas del Rey", "Pelayos de la Presa"]
+    };
+
+    function showPueblos() {
+      const zona = document.getElementById("zona").value;
+      const lista = document.getElementById("listaPueblos");
+      lista.innerHTML = "";
+      if (pueblosPorZona[zona]) {
+        pueblosPorZona[zona].forEach(p => {
+          const option = document.createElement("option");
+          option.value = p;
+          lista.appendChild(option);
+        });
+      }
+    }
+
+    document.getElementById("pueblo").addEventListener("input", () => {
+      const pueblo = document.getElementById("pueblo").value;
+      const aviso = document.getElementById("avisoPueblo");
+      if (pueblo === "La Cabrera") {
+        aviso.style.display = "block";
+        aviso.textContent = "Los pedidos para La Cabrera solo se entregan martes y viernes.";
+      } else {
+        aviso.style.display = "none";
+      }
+    });
+
+    document.getElementById("pedidoForm").addEventListener("submit", e => {
+      e.preventDefault();
+
+      const datos = {
+        fecha: document.getElementById("fecha").value,
+        zona: document.getElementById("zona").value,
+        pueblo: document.getElementById("pueblo").value,
+        direccion: document.getElementById("direccion").value,
+        cantidad: document.getElementById("cantidad").value,
+        nombre: document.getElementById("nombre").value,
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value,
+        observaciones: document.getElementById("observaciones").value,
+        consentimiento: document.getElementById("consentimiento").checked ? "Sí" : "No"
       };
 
-      function showPueblos() {
-        const zona = document.getElementById("zona").value;
-        const lista = document.getElementById("listaPueblos");
-        lista.innerHTML = "";
-        if (pueblosPorZona[zona]) {
-          pueblosPorZona[zona].forEach(p => {
-            const option = document.createElement("option");
-            option.value = p;
-            lista.appendChild(option);
-          });
-        }
+      const formData = new FormData();
+      for (const key in datos) {
+        formData.append(key, datos[key]);
       }
 
-      document.getElementById("pueblo").addEventListener("input", () => {
-        const pueblo = document.getElementById("pueblo").value;
-        const aviso = document.getElementById("avisoPueblo");
-        if (pueblo === "La Cabrera") {
-          aviso.style.display = "block";
-          aviso.textContent = "Los pedidos para La Cabrera solo se entregan martes y viernes.";
-        } else {
-          aviso.style.display = "none";
-        }
+      fetch("https://script.google.com/macros/s/AKfycbxhTezL0HmZyd13o73LgqGdSksZowg34n1_ZNtuLAaEU4qTB3QPskM6HCTdesg6gZmDxw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
       });
 
-      document.getElementById("pedidoForm").addEventListener("submit", e => {
-        e.preventDefault();
-
-        const datos = {
-          fecha: document.getElementById("fecha").value,
-          zona: document.getElementById("zona").value,
-          pueblo: document.getElementById("pueblo").value,
-          direccion: document.getElementById("direccion").value,
-          cantidad: document.getElementById("cantidad").value,
-          nombre: document.getElementById("nombre").value,
-          telefono: document.getElementById("telefono").value,
-          email: document.getElementById("email").value,
-          observaciones: document.getElementById("observaciones").value,
-          consentimiento: document.getElementById("consentimiento").checked ? "Sí" : "No"
-        };
-
-        const formData = new FormData();
-        for (const key in datos) {
-          formData.append(key, datos[key]);
-        }
-
-        fetch("https://script.google.com/macros/s/AKfycbxhTezL0HmZyd13o73LgqGdSksZowg34n1_ZNtuLAaEU4qTB3QPskM6HCTdesg6gZmDxw/exec", {
-          method: "POST",
-          mode: "no-cors",
-          body: formData
-        });
-
-        document.getElementById("mensaje").textContent = "Formulario enviado con éxito. Gracias por confiar en Grupo Geslama.";
-        document.getElementById("pedidoForm").reset();
-      });
-    </script>
-  </body>
+      document.getElementById("pedidoForm").style.display = "none";
+      document.getElementById("mensaje").style.display = "block";
+    });
+  </script>
+</body>
 </html>
