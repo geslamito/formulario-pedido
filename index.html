@@ -8,9 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -81,22 +79,11 @@
       100% { transform: scale(1); }
     }
     @media (max-width: 600px) {
-      form {
-        padding: 15px;
-      }
-      input, select, textarea {
-        font-size: 15px;
-      }
-      input[type="submit"] {
-        padding: 12px 20px;
-        font-size: 15px;
-      }
-      #mensaje {
-        font-size: 18px;
-      }
-      .check-icon {
-        font-size: 40px;
-      }
+      form { padding: 15px; }
+      input, select, textarea { font-size: 15px; }
+      input[type="submit"] { padding: 12px 20px; font-size: 15px; }
+      #mensaje { font-size: 18px; }
+      .check-icon { font-size: 40px; }
     }
   </style>
 </head>
@@ -186,6 +173,30 @@
       calendarioIniciado = false;
     }
 
+    function inicializarCalendario() {
+      const pueblo = document.getElementById("pueblo").value.trim();
+      if (!pueblo || calendarioIniciado || Object.keys(fechasNoDisponibles).length === 0) return;
+
+      flatpickr("#fecha", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        locale: "es",
+        disable: [
+          function(date) {
+            const fechaStr = date.toISOString().split("T")[0];
+            const bloqueos = fechasNoDisponibles[fechaStr];
+            if (!bloqueos) return false;
+            if (bloqueos[pueblo] === "NO") return true;
+            const valores = Object.values(bloqueos);
+            if (valores.length > 0 && valores.every(v => v === "NO")) return true;
+            return false;
+          }
+        ]
+      });
+
+      calendarioIniciado = true;
+    }
+
     document.getElementById("pueblo").addEventListener("input", () => {
       const pueblo = document.getElementById("pueblo").value;
       const aviso = document.getElementById("avisoPueblo");
@@ -197,33 +208,13 @@
         aviso.style.display = "none";
       }
 
-      if (!calendarioIniciado && Object.keys(fechasNoDisponibles).length > 0) {
-        flatpickr("#fecha", {
-          dateFormat: "Y-m-d",
-          minDate: "today",
-          locale: "es",
-          disable: [
-            function(date) {
-              const fechaStr = date.toISOString().split("T")[0];
-              const pueblo = document.getElementById("pueblo").value.trim();
-              if (
-                fechasNoDisponibles[fechaStr] &&
-                (fechasNoDisponibles[fechaStr][pueblo] === "NO" ||
-                 Object.values(fechasNoDisponibles[fechaStr]).every(v => v === "NO"))
-              ) {
-                return true;
-              }
-              return false;
-            }
-          ]
-        });
-        calendarioIniciado = true;
-      }
+      inicializarCalendario();
     });
 
-    // Esta línea permite que al seleccionar un pueblo desde el datalist se dispare el mismo efecto que escribirlo
     document.getElementById("pueblo").addEventListener("change", () => {
-      document.getElementById("pueblo").dispatchEvent(new Event("input"));
+      setTimeout(() => {
+        document.getElementById("pueblo").dispatchEvent(new Event("input"));
+      }, 50);
     });
 
     document.getElementById("fecha").addEventListener("change", () => {
