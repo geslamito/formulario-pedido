@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario de Pedido</title>
@@ -225,6 +227,34 @@
       document.getElementById("pedidoForm").style.display = "none";
       document.getElementById("mensaje").style.display = "block";
     });
+    const jsonUrl = "https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec"; // <-- reemplaza con tu URL de Script Web App
+let fechasNoDisponibles = {};
+
+flatpickr("#fecha", {
+  dateFormat: "Y-m-d",
+  disable: [
+    function(date) {
+      const fechaStr = date.toISOString().split("T")[0];
+      const pueblo = document.getElementById("pueblo").value.trim();
+      if (fechasNoDisponibles[fechaStr] && fechasNoDisponibles[fechaStr][pueblo] === "NO") {
+        return true;
+      }
+      return false;
+    }
+  ]
+});
+
+fetch(jsonUrl)
+  .then(res => res.json())
+  .then(data => {
+    fechasNoDisponibles = data;
+  })
+  .catch(err => console.error("Error cargando fechas no disponibles:", err));
+
+document.getElementById("pueblo").addEventListener("input", () => {
+  const calendario = document.querySelector("#fecha")._flatpickr;
+  calendario.redraw();
+});
   </script>
 </body>
 </html>
