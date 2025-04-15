@@ -11,14 +11,12 @@
     * {
       box-sizing: border-box;
     }
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
       background-color: #fff;
     }
-
     form {
       max-width: 600px;
       margin: auto;
@@ -27,13 +25,11 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
-
     label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
     }
-
     input, select, textarea {
       width: 100%;
       padding: 12px;
@@ -42,12 +38,10 @@
       border: 1px solid #ccc;
       font-size: 16px;
     }
-
     input[type="checkbox"] {
       width: auto;
       margin-right: 10px;
     }
-
     input[type="submit"] {
       background-color: #f45b00;
       color: white;
@@ -60,11 +54,9 @@
       transition: background-color 0.3s ease;
       width: 100%;
     }
-
     input[type="submit"]:hover {
       background-color: #cc4800;
     }
-
     #mensaje {
       display: none;
       margin-top: 40px;
@@ -73,43 +65,35 @@
       color: green;
       animation: fadeIn 0.6s ease-out;
     }
-
     .check-icon {
       font-size: 50px;
       color: green;
       margin-bottom: 10px;
       animation: bounce 0.5s ease;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes bounce {
       0% { transform: scale(0.8); opacity: 0.8; }
       60% { transform: scale(1.1); opacity: 1; }
       100% { transform: scale(1); }
     }
-
     @media (max-width: 600px) {
       form {
         padding: 15px;
       }
-
       input, select, textarea {
         font-size: 15px;
       }
-
       input[type="submit"] {
         padding: 12px 20px;
         font-size: 15px;
       }
-
       #mensaje {
         font-size: 18px;
       }
-
       .check-icon {
         font-size: 40px;
       }
@@ -175,6 +159,18 @@
       sierraOeste: ["Aldea del Fresno", "Cebreros", "Chapinería", "Colmenar del Arroyo", "El Tiemblo", "Fresnedillas de la Oliva", "Navalagamella", "Navas del Rey", "Pelayos de la Presa", "Quijorna", "Robledo de Chavela", "San Martín de Valdeiglesias", "Villamanta", "Villamantilla", "Villanueva de Perales"]
     };
 
+    let fechasNoDisponibles = {};
+    let calendarioIniciado = false;
+
+    const jsonUrl = "https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec";
+
+    fetch(jsonUrl)
+      .then(res => res.json())
+      .then(data => {
+        fechasNoDisponibles = data;
+      })
+      .catch(err => console.error("Error cargando fechas no disponibles:", err));
+
     function showPueblos() {
       const zona = document.getElementById("zona").value;
       const lista = document.getElementById("listaPueblos");
@@ -187,26 +183,41 @@
         });
       }
       document.getElementById("pueblo").value = "";
+      calendarioIniciado = false;
     }
-
-    const jsonUrl = "https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec";
-    let fechasNoDisponibles = {};
-
-    fetch(jsonUrl)
-      .then(res => res.json())
-      .then(data => {
-        fechasNoDisponibles = data;
-      })
-      .catch(err => console.error("Error cargando fechas no disponibles:", err));
 
     document.getElementById("pueblo").addEventListener("input", () => {
       const pueblo = document.getElementById("pueblo").value;
       const aviso = document.getElementById("avisoPueblo");
+
       if (pueblo === "La Cabrera") {
         aviso.style.display = "block";
         aviso.textContent = "Los pedidos para La Cabrera solo se entregan lunes y jueves.";
       } else {
         aviso.style.display = "none";
+      }
+
+      if (!calendarioIniciado && Object.keys(fechasNoDisponibles).length > 0) {
+        flatpickr("#fecha", {
+          dateFormat: "Y-m-d",
+          minDate: "today",
+          locale: "es",
+          disable: [
+            function(date) {
+              const fechaStr = date.toISOString().split("T")[0];
+              const pueblo = document.getElementById("pueblo").value.trim();
+              if (
+                fechasNoDisponibles[fechaStr] &&
+                (fechasNoDisponibles[fechaStr][pueblo] === "NO" ||
+                 Object.values(fechasNoDisponibles[fechaStr]).every(v => v === "NO"))
+              ) {
+                return true;
+              }
+              return false;
+            }
+          ]
+        });
+        calendarioIniciado = true;
       }
     });
 
@@ -265,27 +276,6 @@
       document.getElementById("pedidoForm").style.display = "none";
       document.getElementById("mensaje").style.display = "block";
     });
-
-    flatpickr("#fecha", {
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      locale: "es",
-      disable: [
-        function(date) {
-          const fechaStr = date.toISOString().split("T")[0];
-          const pueblo = document.getElementById("pueblo").value.trim();
-          if (
-            fechasNoDisponibles[fechaStr] &&
-            (fechasNoDisponibles[fechaStr][pueblo] === "NO" ||
-             Object.values(fechasNoDisponibles[fechaStr]).every(v => v === "NO"))
-          ) {
-            return true;
-          }
-          return false;
-        }
-      ]
-    });
   </script>
 </body>
-</html>
 </html>
