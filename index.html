@@ -174,23 +174,26 @@
     }
 
     function inicializarCalendario() {
-      const pueblo = document.getElementById("pueblo").value.trim();
-      if (!pueblo || calendarioIniciado || Object.keys(fechasNoDisponibles).length === 0) return;
+  const pueblo = document.getElementById("pueblo").value.trim();
+  if (!pueblo || calendarioIniciado || Object.keys(fechasNoDisponibles).length === 0) return;
 
-      flatpickr("#fecha", {
-        dateFormat: "Y-m-d",
-        minDate: "today",
-        locale: "es",
-        disable: [
-          function(date) {
-            const fechaStr = date.toISOString().split("T")[0];
-            const bloqueos = fechasNoDisponibles[fechaStr];
-            if (!bloqueos) return false;
-            if (bloqueos[pueblo] === "NO") return true;
-            const valores = Object.values(bloqueos);
-            if (valores.length > 0 && valores.every(v => v === "NO")) return true;
-            return false;
-          }
+  flatpickr("#fecha", {
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    locale: "es",
+    disable: [
+      function(date) {
+        const fechaStr = date.toISOString().split("T")[0];
+        const bloqueos = fechasNoDisponibles[fechaStr];
+        if (!bloqueos) return false;
+        return bloqueos[pueblo] === "NO";
+      }
+    ]
+  });
+
+  calendarioIniciado = true;
+}
+
         ]
       });
 
