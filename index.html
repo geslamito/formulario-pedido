@@ -172,19 +172,32 @@
     }
 
     function inicializarCalendario() {
-      const bloqueos = fechasNoDisponibles[fechaStr];
-if (!bloqueos) return false;
+      const pueblo = document.getElementById("pueblo").value.trim();
+      if (!pueblo || calendarioIniciado || Object.keys(fechasNoDisponibles).length === 0) return;
 
-const nombreNormalizado = pueblo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-const clavesBloqueadas = Object.keys(bloqueos).map(p => p.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+      flatpickr("#fecha", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        locale: "es",
+        disable: [
+          function(date) {
+            const fechaStr = date.toISOString().split("T")[0];
+            const bloqueos = fechasNoDisponibles[fechaStr];
+            const puebloInput = pueblo;
 
-for (let i = 0; i < clavesBloqueadas.length; i++) {
-  if (clavesBloqueadas[i] === nombreNormalizado && Object.values(bloqueos)[i] === "NO") {
-    return true;
-  }
-}
-return false;
+            if (!bloqueos) return false;
 
+            const puebloNormalizado = puebloInput.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            const bloqueoKeys = Object.keys(bloqueos);
+
+            for (const key of bloqueoKeys) {
+              const keyNormalizado = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+              if (puebloNormalizado === keyNormalizado && bloqueos[key] === "NO") {
+                return true;
+              }
+            }
+
+            return false;
           }
         ]
       });
