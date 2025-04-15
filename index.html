@@ -78,6 +78,13 @@
       60% { transform: scale(1.1); opacity: 1; }
       100% { transform: scale(1); }
     }
+    @media (max-width: 600px) {
+      form { padding: 15px; }
+      input, select, textarea { font-size: 15px; }
+      input[type="submit"] { padding: 12px 20px; font-size: 15px; }
+      #mensaje { font-size: 18px; }
+      .check-icon { font-size: 40px; }
+    }
   </style>
 </head>
 <body>
@@ -142,10 +149,12 @@
     let fechasNoDisponibles = {};
     let calendarioIniciado = false;
 
-    fetch("https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec")
+    const jsonUrl = "https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec";
+
+    fetch(jsonUrl)
       .then(res => res.json())
       .then(data => { fechasNoDisponibles = data; })
-      .catch(err => console.error("Error cargando fechas:", err));
+      .catch(err => console.error("Error cargando fechas no disponibles:", err));
 
     function showPueblos() {
       const zona = document.getElementById("zona").value;
@@ -159,53 +168,48 @@
         });
       }
       document.getElementById("pueblo").value = "";
-      document.getElementById("avisoPueblo").style.display = "none";
       calendarioIniciado = false;
     }
 
-    document.getElementById("pueblo").addEventListener("input", () => {
+    function inicializarCalendario() {
       const pueblo = document.getElementById("pueblo").value.trim();
+      if (!pueblo || calendarioIniciado || Object.keys(fechasNoDisponibles).length === 0) return;
+
+      flatpickr("#fecha", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        locale: "es",
+        disable: [
+          function(date) {
+            const fechaStr = date.toISOString().split("T")[0];
+            const bloqueos = fechasNoDisponibles[fechaStr];
+            if (!bloqueos) return false;
+            return bloqueos[pueblo] === "NO";
+          }
+        ]
+      });
+
+      calendarioIniciado = true;
+    }
+
+    document.getElementById("pueblo").addEventListener("input", () => {
+      const pueblo = document.getElementById("pueblo").value;
       const aviso = document.getElementById("avisoPueblo");
 
-      const conteo = { Lunes: 0, Martes: 0, Miércoles: 0, Jueves: 0, Viernes: 0, Sábado: 0 };
-
-      for (const fecha in fechasNoDisponibles) {
-        const estado = fechasNoDisponibles[fecha][pueblo];
-        if (estado !== "NO") {
-          const dia = new Date(fecha).toLocaleDateString("es-ES", { weekday: "long" });
-          const diaCap = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
-          if (conteo.hasOwnProperty(diaCap)) conteo[diaCap]++;
-        }
-      }
-
-      const diasPermitidos = Object.values(conteo).filter(v => v > 0).length;
-      if (diasPermitidos < 5) {
-        const orden = Object.keys(conteo);
-        const dias = orden.filter(d => conteo[d] > 0);
+      if (pueblo === "La Cabrera") {
         aviso.style.display = "block";
-        aviso.textContent = `Este pueblo se reparte ${dias.join(", ")}.`;
+        aviso.textContent = "Los pedidos para La Cabrera solo se entregan lunes y jueves.";
       } else {
         aviso.style.display = "none";
       }
 
-      if (!calendarioIniciado && Object.keys(fechasNoDisponibles).length > 0) {
-        flatpickr("#fecha", {
-          dateFormat: "Y-m-d",
-          minDate: new Date().fp_incr(1), // No hoy
-          locale: "es",
-          disable: [
-            function(date) {
-              const fechaStr = date.toISOString().split("T")[0];
-              const bloqueos = fechasNoDisponibles[fechaStr];
-              if (!bloqueos) return false;
-              if (bloqueos[pueblo] === "NO") return true;
-              const valores = Object.values(bloqueos);
-              return valores.length > 0 && valores.every(v => v === "NO");
-            }
-          ]
-        });
-        calendarioIniciado = true;
-      }
+      inicializarCalendario();
+    });
+
+    document.getElementById("pueblo").addEventListener("change", () => {
+      setTimeout(() => {
+        document.getElementById("pueblo").dispatchEvent(new Event("input"));
+      }, 50);
     });
 
     document.getElementById("fecha").addEventListener("change", () => {
@@ -215,7 +219,7 @@
 
       if (fechasNoDisponibles[fechaStr] && fechasNoDisponibles[fechaStr][pueblo] === "NO") {
         avisoFecha.style.display = "block";
-        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
+        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha. Por favor, elige otro día.";
       } else {
         avisoFecha.style.display = "none";
         avisoFecha.textContent = "";
@@ -230,11 +234,12 @@
       if (fechasNoDisponibles[fechaStr] && fechasNoDisponibles[fechaStr][pueblo] === "NO") {
         e.preventDefault();
         avisoFecha.style.display = "block";
-        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
+        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha. Por favor, elige otro día.";
         return;
       }
 
       e.preventDefault();
+
       const datos = {
         fecha: fechaStr,
         zona: document.getElementById("zona").value,
