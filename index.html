@@ -8,57 +8,120 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #fff; }
-    form { max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); }
-    label { font-weight: bold; display: block; margin: 10px 0 5px; }
-    input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
-    input[type="checkbox"] { width: auto; margin-right: 10px; }
-    input[type="submit"] { background: #f45b00; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: background 0.3s; width: 100%; }
-    input[type="submit"]:hover { background: #cc4800; }
-    #mensaje { display: none; text-align: center; font-size: 20px; color: green; margin-top: 40px; }
-    .check-icon { font-size: 50px; }
-    #avisoPueblo, #avisoFecha { color: red; font-weight: bold; display: none; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fff;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 10px;
+    }
+    input[type="submit"] {
+      background-color: #f45b00;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    input[type="submit"]:hover {
+      background-color: #cc4800;
+    }
+    #mensaje {
+      display: none;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 20px;
+      color: green;
+      animation: fadeIn 0.6s ease-out;
+    }
+    .check-icon {
+      font-size: 50px;
+      color: green;
+      margin-bottom: 10px;
+      animation: bounce 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
+
   <form id="pedidoForm">
     <h2>Haz tu pedido de gasoil</h2>
+
     <label for="zona">Zona de reparto:</label>
-    <select id="zona" required>
+    <select id="zona" name="zona" onchange="showPueblos();" required>
       <option value="">Seleccione una zona</option>
       <option value="sierraNorte">Sierra Norte</option>
       <option value="sierraOeste">Sierra Oeste</option>
     </select>
 
     <label for="pueblo">Pueblo:</label>
-    <input list="listaPueblos" id="pueblo" required />
+    <input list="listaPueblos" id="pueblo" name="pueblo" required />
     <datalist id="listaPueblos"></datalist>
-    <div id="avisoPueblo"></div>
+
+    <div id="avisoPueblo" style="color: red; font-weight: bold; display: none;"></div>
 
     <label for="fecha">Fecha de preferencia:</label>
-    <input type="text" id="fecha" required />
-    <div id="avisoFecha"></div>
+    <input type="text" id="fecha" name="fecha" required />
+    <div id="avisoFecha" style="color: red; font-weight: bold; display: none; margin-bottom: 15px;"></div>
 
     <label for="direccion">Dirección:</label>
-    <input type="text" id="direccion" required />
+    <input type="text" id="direccion" name="direccion" required />
 
     <label for="cantidad">Cantidad (mínimo 300 litros):</label>
-    <input type="number" id="cantidad" min="300" required />
+    <input type="number" id="cantidad" name="cantidad" min="300" required />
 
     <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" required />
+    <input type="text" id="nombre" name="nombre" required />
 
     <label for="telefono">Teléfono:</label>
-    <input type="tel" id="telefono" required />
+    <input type="tel" id="telefono" name="telefono" required />
 
     <label for="email">Correo electrónico:</label>
-    <input type="email" id="email" required />
+    <input type="email" id="email" name="email" required />
 
     <label for="observaciones">Observaciones:</label>
-    <textarea id="observaciones" rows="4"></textarea>
+    <textarea id="observaciones" name="observaciones" rows="4"></textarea>
 
     <label>
-      <input type="checkbox" id="consentimiento" required />
+      <input type="checkbox" id="consentimiento" name="consentimiento" required />
       Acepto los términos y condiciones y la política de privacidad.
     </label>
 
@@ -67,7 +130,7 @@
 
   <div id="mensaje">
     <div class="check-icon">✅</div>
-    <p>Pedido enviado correctamente.<br><strong>Gracias por confiar en Grupo Geslama.</strong></p>
+    <div>Pedido enviado correctamente.<br><strong>Gracias por confiar en Grupo Geslama.</strong></div>
   </div>
 
   <script>
@@ -79,14 +142,12 @@
     let fechasNoDisponibles = {};
     let calendarioIniciado = false;
 
-    const jsonUrl = "https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec";
-
-    fetch(jsonUrl)
+    fetch("https://script.google.com/macros/s/AKfycbzXa3o-lKsHqhRZBUZUe9bTPCh0U9X_85JAlafPQEpeUsOrvzuUWvdAhtiKFETbxz_H/exec")
       .then(res => res.json())
       .then(data => { fechasNoDisponibles = data; })
-      .catch(err => console.error("Error al cargar JSON:", err));
+      .catch(err => console.error("Error cargando fechas:", err));
 
-    document.getElementById("zona").addEventListener("change", () => {
+    function showPueblos() {
       const zona = document.getElementById("zona").value;
       const lista = document.getElementById("listaPueblos");
       lista.innerHTML = "";
@@ -97,45 +158,49 @@
           lista.appendChild(option);
         });
       }
-    });
+      document.getElementById("pueblo").value = "";
+      document.getElementById("avisoPueblo").style.display = "none";
+      calendarioIniciado = false;
+    }
 
     document.getElementById("pueblo").addEventListener("input", () => {
       const pueblo = document.getElementById("pueblo").value.trim();
       const aviso = document.getElementById("avisoPueblo");
 
-      // Calcular días disponibles
-      let conteo = { "Lunes": 0, "Martes": 0, "Miércoles": 0, "Jueves": 0, "Viernes": 0, "Sábado": 0 };
+      const conteo = { Lunes: 0, Martes: 0, Miércoles: 0, Jueves: 0, Viernes: 0, Sábado: 0 };
+
       for (const fecha in fechasNoDisponibles) {
-        const fechaObj = new Date(fecha);
-        const diaSemana = fechaObj.toLocaleDateString('es-ES', { weekday: 'long' });
-        if (!(fechasNoDisponibles[fecha][pueblo] === "NO")) {
-          if (conteo[diaSemana] !== undefined) conteo[diaSemana]++;
+        const estado = fechasNoDisponibles[fecha][pueblo];
+        if (estado !== "NO") {
+          const dia = new Date(fecha).toLocaleDateString("es-ES", { weekday: "long" });
+          const diaCap = dia.charAt(0).toUpperCase() + dia.slice(1).toLowerCase();
+          if (conteo.hasOwnProperty(diaCap)) conteo[diaCap]++;
         }
       }
 
-      const diasPermitidos = Object.entries(conteo).filter(([dia, val]) => val > 0).length;
-
+      const diasPermitidos = Object.values(conteo).filter(v => v > 0).length;
       if (diasPermitidos < 5) {
-  const ordenDias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  const diasDisponibles = ordenDias.filter(d => conteo[d] > 0);
-  aviso.style.display = "block";
-  aviso.textContent = `Este pueblo se reparte ${diasDisponibles.join(", ")}.`;
-} else {
-  aviso.style.display = "none";
-}
-
+        const orden = Object.keys(conteo);
+        const dias = orden.filter(d => conteo[d] > 0);
+        aviso.style.display = "block";
+        aviso.textContent = `Este pueblo se reparte ${dias.join(", ")}.`;
+      } else {
+        aviso.style.display = "none";
+      }
 
       if (!calendarioIniciado && Object.keys(fechasNoDisponibles).length > 0) {
         flatpickr("#fecha", {
           dateFormat: "Y-m-d",
-          minDate: new Date().fp_incr(1),
+          minDate: new Date().fp_incr(1), // No hoy
           locale: "es",
           disable: [
-            function (date) {
+            function(date) {
               const fechaStr = date.toISOString().split("T")[0];
-              if (!fechasNoDisponibles[fechaStr]) return false;
-              if (fechasNoDisponibles[fechaStr][pueblo] === "NO") return true;
-              return false;
+              const bloqueos = fechasNoDisponibles[fechaStr];
+              if (!bloqueos) return false;
+              if (bloqueos[pueblo] === "NO") return true;
+              const valores = Object.values(bloqueos);
+              return valores.length > 0 && valores.every(v => v === "NO");
             }
           ]
         });
@@ -144,31 +209,34 @@
     });
 
     document.getElementById("fecha").addEventListener("change", () => {
-      const fecha = document.getElementById("fecha").value;
+      const fechaStr = document.getElementById("fecha").value;
       const pueblo = document.getElementById("pueblo").value.trim();
-      const aviso = document.getElementById("avisoFecha");
-      if (fechasNoDisponibles[fecha] && fechasNoDisponibles[fecha][pueblo] === "NO") {
-        aviso.style.display = "block";
-        aviso.textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
+      const avisoFecha = document.getElementById("avisoFecha");
+
+      if (fechasNoDisponibles[fechaStr] && fechasNoDisponibles[fechaStr][pueblo] === "NO") {
+        avisoFecha.style.display = "block";
+        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
       } else {
-        aviso.style.display = "none";
+        avisoFecha.style.display = "none";
+        avisoFecha.textContent = "";
       }
     });
 
-    document.getElementById("pedidoForm").addEventListener("submit", (e) => {
-      const fecha = document.getElementById("fecha").value;
+    document.getElementById("pedidoForm").addEventListener("submit", e => {
+      const fechaStr = document.getElementById("fecha").value;
       const pueblo = document.getElementById("pueblo").value.trim();
-      if (fechasNoDisponibles[fecha] && fechasNoDisponibles[fecha][pueblo] === "NO") {
+      const avisoFecha = document.getElementById("avisoFecha");
+
+      if (fechasNoDisponibles[fechaStr] && fechasNoDisponibles[fechaStr][pueblo] === "NO") {
         e.preventDefault();
-        document.getElementById("avisoFecha").style.display = "block";
-        document.getElementById("avisoFecha").textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
+        avisoFecha.style.display = "block";
+        avisoFecha.textContent = "Lo sentimos, no hay reparto disponible en esa fecha.";
         return;
       }
 
       e.preventDefault();
-
       const datos = {
-        fecha: fecha,
+        fecha: fechaStr,
         zona: document.getElementById("zona").value,
         pueblo: pueblo,
         direccion: document.getElementById("direccion").value,
@@ -181,7 +249,9 @@
       };
 
       const formData = new FormData();
-      for (const key in datos) formData.append(key, datos[key]);
+      for (const key in datos) {
+        formData.append(key, datos[key]);
+      }
 
       fetch("https://script.google.com/macros/s/AKfycbxhTezL0HmZyd13o73LgqGdSksZowg34n1_ZNtuLAaEU4qTB3QPskM6HCTdesg6gZmDxw/exec", {
         method: "POST",
