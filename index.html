@@ -221,6 +221,11 @@
       }
     });
 
+    // Esta línea permite que al seleccionar un pueblo desde el datalist se dispare el mismo efecto que escribirlo
+    document.getElementById("pueblo").addEventListener("change", () => {
+      document.getElementById("pueblo").dispatchEvent(new Event("input"));
+    });
+
     document.getElementById("fecha").addEventListener("change", () => {
       const fechaStr = document.getElementById("fecha").value;
       const pueblo = document.getElementById("pueblo").value.trim();
