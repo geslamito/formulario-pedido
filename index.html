@@ -3,128 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <title>Pedido de Gasóleo</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #ffffff;
+      background-color: #ffffff;
       color: #333;
-      padding: 20px;
+      max-width: 600px;
+      margin: 2em auto;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #f60; /* naranja Geslama */
     }
     label {
+      display: block;
+      margin-top: 1em;
       font-weight: bold;
-      color: orange;
     }
-    input, select, textarea, button {
+    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0 20px;
+      padding: 0.5em;
+      margin-top: 0.3em;
       border: 1px solid #ccc;
       border-radius: 5px;
-      box-sizing: border-box;
-      font-size: 1rem;
     }
     button {
-      background-color: orange;
+      margin-top: 1.5em;
+      background-color: #f60;
       color: white;
       border: none;
+      padding: 0.75em 1.5em;
+      border-radius: 5px;
+      font-size: 1em;
       cursor: pointer;
-      font-weight: bold;
     }
     button:hover {
-      background-color: #cc7000;
+      background-color: #e55a00;
     }
-    .formulario {
-      max-width: 600px;
-      margin: auto;
+    .success, .error {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
     }
   </style>
 </head>
 <body>
-  <div class="formulario">
-    <h2 style="color: orange;">Formulario de Pedido</h2>
-    <form id="pedidoForm">
-      <label for="fecha">Fecha de preferencia</label>
-      <input type="text" id="fecha" name="fecha" required>
+  <h1>Solicita tu pedido</h1>
+  <form id="pedidoForm">
+    <label for="zona">Zona:</label>
+    <select name="zona" id="zona" required>
+      <option value="">-- Selecciona zona --</option>
+      <option value="sierraNorte">Sierra Norte</option>
+      <option value="sierraOeste">Sierra Oeste</option>
+    </select>
 
-      <label for="zona">Zona de Reparto</label>
-      <select id="zona" name="zona" required>
-        <option value="">Selecciona una zona</option>
-        <option value="sierraOeste">Sierra Oeste</option>
-        <option value="sierraNorte">Sierra Norte</option>
-      </select>
+    <label for="pueblo">Pueblo:</label>
+    <input type="text" id="pueblo" name="pueblo" required>
 
-      <label for="pueblo">Pueblo</label>
-      <input type="text" id="pueblo" name="pueblo" required>
+    <label for="direccion">Dirección:</label>
+    <input type="text" id="direccion" name="direccion" required>
 
-      <label for="direccion">Dirección</label>
-      <input type="text" id="direccion" name="direccion" required>
+    <label for="cantidad">Cantidad (mínimo 300 litros):</label>
+    <input type="number" id="cantidad" name="cantidad" min="300" required>
 
-      <label for="litros">Cantidad (mínimo 300 litros)</label>
-      <input type="number" id="litros" name="litros" min="300" required>
+    <label for="nombre">Tu nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
 
-      <label for="nombre">Tu nombre</label>
-      <input type="text" id="nombre" name="nombre" required>
+    <label for="telefono">Teléfono:</label>
+    <input type="tel" id="telefono" name="telefono" required>
 
-      <label for="telefono">Número de teléfono</label>
-      <input type="tel" id="telefono" name="telefono" required>
+    <label for="email">Correo electrónico:</label>
+    <input type="email" id="email" name="email" required>
 
-      <label for="email">Correo electrónico</label>
-      <input type="email" id="email" name="email" required>
+    <label for="comentarios">Preguntas o comentarios:</label>
+    <textarea id="comentarios" name="comentarios" rows="4"></textarea>
 
-      <label for="comentarios">Preguntas y comentarios</label>
-      <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+    <button type="submit">Enviar pedido</button>
+    <div id="mensaje" class=""></div>
+  </form>
 
-      <label>
-        <input type="checkbox" id="consentimiento" name="consentimiento" required>
-        Acepto el tratamiento de datos y comunicaciones comerciales.
-      </label>
-
-      <button type="submit">Enviar Pedido</button>
-    </form>
-
-    <div id="mensaje" style="margin-top: 20px;"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    flatpickr("#fecha", {
-      dateFormat: "d/m/Y",
-      minDate: "today"
-    });
-
-    document.getElementById("pedidoForm").addEventListener("submit", function (e) {
+    document.getElementById("pedidoForm").addEventListener("submit", function(e) {
       e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
 
-      const datos = {
-        fecha: document.getElementById("fecha").value,
-        zona: document.getElementById("zona").value,
-        pueblo: document.getElementById("pueblo").value,
-        direccion: document.getElementById("direccion").value,
-        litros: document.getElementById("litros").value,
-        nombre: document.getElementById("nombre").value,
-        telefono: document.getElementById("telefono").value,
-        email: document.getElementById("email").value,
-        comentarios: document.getElementById("comentarios").value,
-        consentimiento: document.getElementById("consentimiento").checked ? "Sí" : "No"
-      };
-
-      fetch("https://script.google.com/macros/s/AKfycbxrczU022FB_wFBihKEz21WrjTjDEEU3IDMg5icTWinmUcuaA0gvZ6WOt6SBsW2VeO2yA/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbxXYZ123.../exec", {  // ← pon aquí tu URL real del endpoint
         method: "POST",
-        body: JSON.stringify(datos),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        body: data
       })
-        .then(res => res.text())
-        .then(respuesta => {
-          document.getElementById("mensaje").innerHTML = `<p style="color: green;">Pedido enviado correctamente</p>`;
-          document.getElementById("pedidoForm").reset();
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById("mensaje").innerHTML = `<p style="color: red;">Error al enviar el pedido</p>`;
-        });
+      .then(response => response.text())
+      .then(text => {
+        document.getElementById("mensaje").textContent = "Pedido enviado correctamente.";
+        document.getElementById("mensaje").className = "success";
+        form.reset();
+      })
+      .catch(error => {
+        console.error("Error al enviar:", error);
+        document.getElementById("mensaje").textContent = "Hubo un error al enviar el pedido.";
+        document.getElementById("mensaje").className = "error";
+      });
     });
   </script>
 </body>
