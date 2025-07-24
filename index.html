@@ -1,115 +1,146 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Pedido de Gasóleo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario de Pedido</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #ffffff;
-      color: #333;
-      max-width: 600px;
-      margin: 2em auto;
-      padding: 2em;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    body { font-family: Arial, sans-serif; padding: 20px; background: #fff; }
+    form {
+      max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9;
+      border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h1 {
-      color: #f60; /* naranja Geslama */
-    }
-    label {
-      display: block;
-      margin-top: 1em;
-      font-weight: bold;
-    }
+    label { display: block; margin-top: 15px; font-weight: bold; }
     input, select, textarea {
-      width: 100%;
-      padding: 0.5em;
-      margin-top: 0.3em;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      width: 100%; padding: 12px; margin-top: 5px; font-size: 16px;
+      border: 1px solid #ccc; border-radius: 5px;
     }
-    button {
-      margin-top: 1.5em;
-      background-color: #f60;
-      color: white;
-      border: none;
-      padding: 0.75em 1.5em;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
+    input[type="submit"] {
+      background-color: #f45b00; color: white; border: none;
+      padding: 15px; margin-top: 20px; cursor: pointer;
+      font-weight: bold; border-radius: 50px; width: 100%;
     }
-    button:hover {
-      background-color: #e55a00;
+    input[type="submit"]:hover { background-color: #cc4800; }
+    #mensaje {
+      display: none; margin-top: 30px; text-align: center;
+      font-size: 18px; color: green;
     }
-    .success, .error {
-      margin-top: 1em;
-      font-weight: bold;
+    .check-icon {
+      font-size: 40px; color: green; margin-bottom: 10px;
+      animation: bounce 0.4s ease;
     }
-    .success {
-      color: green;
-    }
-    .error {
-      color: red;
+    @keyframes bounce {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <h1>Solicita tu pedido</h1>
+
   <form id="pedidoForm">
-    <label for="zona">Zona:</label>
-    <select name="zona" id="zona" required>
-      <option value="">-- Selecciona zona --</option>
+    <h2>Haz tu pedido de gasoil</h2>
+
+    <label for="zona">Zona de reparto:</label>
+    <select id="zona" name="zona" required>
+      <option value="">Seleccione una zona</option>
       <option value="sierraNorte">Sierra Norte</option>
       <option value="sierraOeste">Sierra Oeste</option>
     </select>
 
     <label for="pueblo">Pueblo:</label>
-    <input type="text" id="pueblo" name="pueblo" required>
+    <input list="listaPueblos" id="pueblo" name="pueblo" required />
+    <datalist id="listaPueblos"></datalist>
+
+    <label for="fecha">Fecha de preferencia:</label>
+    <input type="text" id="fecha" name="fecha" required />
 
     <label for="direccion">Dirección:</label>
-    <input type="text" id="direccion" name="direccion" required>
+    <input type="text" id="direccion" name="direccion" required />
 
     <label for="cantidad">Cantidad (mínimo 300 litros):</label>
-    <input type="number" id="cantidad" name="cantidad" min="300" required>
+    <input type="number" id="cantidad" name="cantidad" min="300" required />
 
-    <label for="nombre">Tu nombre:</label>
-    <input type="text" id="nombre" name="nombre" required>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required />
 
     <label for="telefono">Teléfono:</label>
-    <input type="tel" id="telefono" name="telefono" required>
+    <input type="tel" id="telefono" name="telefono" required />
 
     <label for="email">Correo electrónico:</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email" required />
 
-    <label for="comentarios">Preguntas o comentarios:</label>
-    <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+    <label for="observaciones">Observaciones:</label>
+    <textarea id="observaciones" name="observaciones" rows="3"></textarea>
 
-    <button type="submit">Enviar pedido</button>
-    <div id="mensaje" class=""></div>
+    <label>
+      <input type="checkbox" id="consentimiento" name="consentimiento" required />
+      Acepto los términos y condiciones y la política de privacidad.
+    </label>
+
+    <input type="submit" value="Enviar Pedido" />
   </form>
 
-  <script>
-    document.getElementById("pedidoForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const data = new FormData(form);
+  <div id="mensaje">
+    <div class="check-icon">✅</div>
+    <p>Pedido enviado correctamente.<br><strong>Gracias por confiar en Grupo Geslama.</strong></p>
+  </div>
 
-      fetch("https://script.google.com/macros/s/AKfycbxrczU022FB_wFBihKEz21WrjTjDEEU3IDMg5icTWinmUcuaA0gvZ6WOt6SBsW2VeO2yA/exec", {  // ← pon aquí tu URL real del endpoint
-        method: "POST",
-        body: data
-      })
-      .then(response => response.text())
-      .then(text => {
-        document.getElementById("mensaje").textContent = "Pedido enviado correctamente.";
-        document.getElementById("mensaje").className = "success";
-        form.reset();
-      })
-      .catch(error => {
-        console.error("Error al enviar:", error);
-        document.getElementById("mensaje").textContent = "Hubo un error al enviar el pedido.";
-        document.getElementById("mensaje").className = "error";
-      });
+  <script>
+    const pueblosPorZona = {
+      sierraNorte: ["El Molar", "San Agustín del Guadalix", "La Cabrera", "Bustarviejo"],
+      sierraOeste: ["San Martín de Valdeiglesias", "Pelayos de la Presa", "Navas del Rey"]
+    };
+
+    document.getElementById("zona").addEventListener("change", () => {
+      const zona = document.getElementById("zona").value;
+      const lista = document.getElementById("listaPueblos");
+      lista.innerHTML = "";
+      if (pueblosPorZona[zona]) {
+        pueblosPorZona[zona].forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p;
+          lista.appendChild(opt);
+        });
+      }
+    });
+
+    flatpickr("#fecha", {
+      minDate: "today",
+      locale: "es",
+      dateFormat: "Y-m-d"
+    });
+
+    document.getElementById("pedidoForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      for (const [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
+
+      try {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbxrczU022FB_wFBihKEz21WrjTjDEEU3IDMg5icTWinmUcuaA0gvZ6WOt6SBsW2VeO2yA/exec", {
+          method: "POST",
+          body: params
+        });
+
+        if (res.ok) {
+          form.style.display = "none";
+          document.getElementById("mensaje").style.display = "block";
+        } else {
+          alert("Error al enviar. Intenta de nuevo.");
+        }
+
+      } catch (error) {
+        alert("Error de conexión. Intenta de nuevo más tarde.");
+        console.error(error);
+      }
     });
   </script>
 </body>
